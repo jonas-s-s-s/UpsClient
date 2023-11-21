@@ -1,0 +1,23 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:UpsClient.ViewModels"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="UpsClient.Views.ServerIpView"
+			 x:DataType="vm:ServerIpViewModel">
+
+	<Grid ColumnDefinitions="1*" RowDefinitions="2* 1* 1*">
+		<TextBlock FontSize="17" FontWeight="Bold" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">Enter the server information</TextBlock>
+
+		<Grid Margin="200 0 200 0" Grid.Column="0" Grid.Row="1" ColumnDefinitions="1* 1*" RowDefinitions="1* 1*">
+			<TextBlock Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">Hostname:</TextBlock>
+			<TextBlock Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">Port:</TextBlock>
+
+			<TextBox Text="{Binding hostnameStr}" Name="hostnameTextbox" VerticalContentAlignment="Center" HorizontalContentAlignment="Left"  Grid.Row="0" Grid.Column="1" Margin="14"></TextBox>
+			<TextBox Text="{Binding portStr}" VerticalContentAlignment="Center" HorizontalContentAlignment="Left"  Grid.Row="1" Grid.Column="1" Margin="14"></TextBox>
+		</Grid>
+
+		<Button Command="{Binding OkBtnCmd}" Name="serverIpViewOkButton" Width="140" Height="40" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center">Ok</Button>
+	</Grid>
+</UserControl>

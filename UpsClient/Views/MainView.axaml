@@ -1,0 +1,35 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:UpsClient.ViewModels"
+             xmlns:views="clr-namespace:UpsClient.Views"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="UpsClient.Views.MainView"
+             x:DataType="vm:MainViewModel">
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:MainViewModel />
+	</Design.DataContext>
+
+	<Grid ColumnDefinitions="1*,4*" RowDefinitions="1*,10*"  Margin="4">
+		<Border BorderThickness="1" BorderBrush="Black" Background="Azure" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
+			<StackPanel>
+				<TextBlock Margin="15">Sim Game options</TextBlock>
+				<Button IsEnabled="{Binding isDisconnectBtnEnabled}" Command="{Binding DisconnectBtnCmd}" Margin="3" HorizontalAlignment="Stretch">Disconnect</Button>
+				<Button IsEnabled="{Binding isLeaveGameBtnEnabled}" Command="{Binding LeaveGameBtnCmd}" Margin="3" HorizontalAlignment="Stretch">Leave Game</Button>
+			</StackPanel>
+		</Border>
+
+		<Border BorderThickness="1" Margin="5 0 0 5" BorderBrush="Black" Background="Azure" Grid.Column="1" Grid.Row="0">
+
+		</Border>
+
+		<Border Name="ViewContainer" BorderThickness="1" Margin="5 0 0 0" BorderBrush="Black" Background="" Grid.Column="1" Grid.Row="1">
+			<ContentControl Content="{Binding currentView}"/>
+		</Border>
+
+	</Grid>
+
+</UserControl>
