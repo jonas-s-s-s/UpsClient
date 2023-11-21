@@ -7,8 +7,30 @@
              x:Class="UpsClient.Views.GameRoomView"
 			 x:DataType="vm:GameRoomViewModel">
 
-	<Grid ColumnDefinitions="1*" RowDefinitions="2* 1* 1*">
+	<Grid ColumnDefinitions="1*" RowDefinitions="1* 7*">
 		<TextBlock FontSize="17" FontWeight="Bold" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">Game Room</TextBlock>
+
+		<Grid Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+			<Canvas Width="800" Height="400">
+				<!--TOP NODE-->
+				<Ellipse Fill="Red" Width="15" Height="15" Canvas.Left="395" Canvas.Top="0"/>
+				<!--TOP LEFT NODE-->
+				<Ellipse Fill="Red" Width="15" Height="15" Canvas.Left="220" Canvas.Top="95.5"/>
+				<!--TOP RIGHT NODE-->
+				<Ellipse Fill="Red" Width="15" Height="15" Canvas.Left="565" Canvas.Top="95.5"/>
+
+
+
+
+
+				<!--BOTTOM RIGHT NODE-->
+				<Ellipse Fill="Red" Width="15" Height="15" Canvas.Left="565" Canvas.Top="268.5"/>
+				<!--BOTTOM LEFT NODE-->
+				<Ellipse Fill="Red" Width="15" Height="15" Canvas.Left="220" Canvas.Top="268.5"/>
+				<!--BOTTOM NODE-->
+				<Ellipse Fill="Red" Width="15" Height="15" Canvas.Left="395" Canvas.Top="381.5"/>
+			</Canvas>
+		</Grid>
 
 	</Grid>
 </UserControl>
