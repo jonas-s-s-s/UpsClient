@@ -1,31 +1,31 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using ReactiveUI;
+using System.Collections.ObjectModel;
 using System.Reactive;
 using UpsClient.Models;
 using UpsClient.Views;
 
 namespace UpsClient.ViewModels;
 
-public partial class LoginViewModel : ViewModelBase
+public partial class IdleRoomViewModel : ViewModelBase
 {
     private GameClient _model;
-    public ReactiveCommand<Unit, Unit> OkBtnCmd { get; }
-    public string usernameStr { get; set; }
+    public ObservableCollection<RoomListItem> ListItems { get; }
 
-    public LoginViewModel(GameClient model)
+    public IdleRoomViewModel(GameClient model)
     {
         _model = model;
-        OkBtnCmd = ReactiveCommand.Create(OkBtn_Click);
-        usernameStr = string.Empty;
+        ObservableCollection<RoomListItem> roomListItems = new ObservableCollection<RoomListItem>();
+        roomListItems.Add(new RoomListItem(1,"AAA", "BBB", "CCC", "DDD"));
+        roomListItems.Add(new RoomListItem(2,"AA", "BB", "CC", "DD"));
+        ListItems = roomListItems;
     }
 
-    public void OkBtn_Click()
+    public void joinGame(int id)
     {
-        if (!string.IsNullOrWhiteSpace(usernameStr))
-            _model.setUsername(usernameStr);
+        _model.joinGame(id);
     }
-
 
 
 }

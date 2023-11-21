@@ -7,14 +7,25 @@ using UpsClient.Views;
 
 namespace UpsClient.ViewModels;
 
-public partial class IdleRoomViewModel : ViewModelBase
+public partial class LoginViewModel : ViewModelBase
 {
     private GameClient _model;
+    public ReactiveCommand<Unit, Unit> OkBtnCmd { get; }
+    public string usernameStr { get; set; }
 
-    public IdleRoomViewModel(GameClient model)
+    public LoginViewModel(GameClient model)
     {
         _model = model;
+        OkBtnCmd = ReactiveCommand.Create(OkBtn_Click);
+        usernameStr = string.Empty;
     }
+
+    public void OkBtn_Click()
+    {
+        if (!string.IsNullOrWhiteSpace(usernameStr))
+            _model.setUsername(usernameStr);
+    }
+
 
 
 }

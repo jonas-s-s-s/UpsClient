@@ -67,6 +67,8 @@ public partial class MainViewModel : ViewModelBase
         isDisconnectBtnEnabled = false;
         isLeaveGameBtnEnabled = true;
 
+        currentView = new GameRoomView();
+        currentView.DataContext = new GameRoomViewModel(_model);
     }
 
     //Event handlers

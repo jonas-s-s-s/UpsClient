@@ -39,5 +39,12 @@ namespace UpsClient.Models
 
             _mainVm.changeToIdleRoomView();
         }
+
+        public void joinGame(int id)
+        {
+            Console.WriteLine("joinGame() called with " + id);
+
+            _mainVm.changeToGameRoomView();
+        }
     }
 }
