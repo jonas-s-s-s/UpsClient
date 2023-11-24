@@ -15,10 +15,10 @@ public partial class MainViewModel : ViewModelBase
     public UserControl currentView { get => _currentView; set => this.RaiseAndSetIfChanged(ref this._currentView, value); }
 
     // All Views created on startup
-    private GameRoomView _gameRoomView;
-    private IdleRoomView _idleRoomView;
-    private LoginView _loginView;
-    private ServerIpView _serverIpView;
+    public GameRoomView GameRoomView;
+    public IdleRoomView IdleRoomView;
+    public LoginView LoginView;
+    public ServerIpView ServerIpView;
 
     public ReactiveCommand<Unit, Unit> DisconnectBtnCmd { get; }
     public ReactiveCommand<Unit, Unit> LeaveGameBtnCmd { get; }
@@ -35,19 +35,19 @@ public partial class MainViewModel : ViewModelBase
 
         _model = new GameClient(this);
 
-        _gameRoomView = new GameRoomView();
-        _gameRoomView.DataContext = new GameRoomViewModel(_model);
+        GameRoomView = new GameRoomView();
+        GameRoomView.DataContext = new GameRoomViewModel(_model);
         
-        _idleRoomView = new IdleRoomView();
-        _idleRoomView.DataContext = new IdleRoomViewModel(_model);
+        IdleRoomView = new IdleRoomView();
+        IdleRoomView.DataContext = new IdleRoomViewModel(_model);
 
-        _loginView = new LoginView();
-        _loginView.DataContext = new LoginViewModel(_model);
+        LoginView = new LoginView();
+        LoginView.DataContext = new LoginViewModel(_model);
 
-        _serverIpView = new ServerIpView();
-        _serverIpView.DataContext = new ServerIpViewModel(_model);
+        ServerIpView = new ServerIpView();
+        ServerIpView.DataContext = new ServerIpViewModel(_model);
 
-        _currentView = _serverIpView;
+        _currentView = ServerIpView;
     }
 
     public void changeToServerIpView()
@@ -55,7 +55,7 @@ public partial class MainViewModel : ViewModelBase
         isDisconnectBtnEnabled = false;
         isLeaveGameBtnEnabled = false;
 
-        currentView = _serverIpView;
+        currentView = ServerIpView;
     }
 
     public void changeToLoginView()
@@ -63,7 +63,7 @@ public partial class MainViewModel : ViewModelBase
         isDisconnectBtnEnabled = true;
         isLeaveGameBtnEnabled = false;
 
-        currentView = _loginView;
+        currentView = LoginView;
     }
 
     public void changeToIdleRoomView()
@@ -71,7 +71,7 @@ public partial class MainViewModel : ViewModelBase
         isDisconnectBtnEnabled = true;
         isLeaveGameBtnEnabled = false;
 
-        currentView = _idleRoomView;
+        currentView = IdleRoomView;
     }
 
     public void changeToGameRoomView()
@@ -79,7 +79,7 @@ public partial class MainViewModel : ViewModelBase
         isDisconnectBtnEnabled = false;
         isLeaveGameBtnEnabled = true;
 
-        currentView = _gameRoomView;
+        currentView = GameRoomView;
     }
 
     //Event handlers

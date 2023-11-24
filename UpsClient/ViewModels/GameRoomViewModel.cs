@@ -81,8 +81,7 @@ public partial class GameRoomViewModel : ViewModelBase
         //Get from model
         OpponentUsername = _model.getOpponentUsername();
         MyUsername = _model.getMyUsername();
-        //IsMyTurn = _model.isMyTurn();
-        IsMyTurn = true;
+        IsMyTurn = _model.isMyTurn();
 
         GameStatus = "Waiting...";
         _resetAllStrokes();
@@ -165,40 +164,40 @@ public partial class GameRoomViewModel : ViewModelBase
         switch (edge)
         {
             case "{0,1}":
-                return  _strokeE01;
+                return _strokeE01;
             case "{0,2}":
-                return  _strokeE02;
+                return _strokeE02;
             case "{0,3}":
-                return  _strokeE03;
+                return _strokeE03;
             case "{0,4}":
-                return  _strokeE04;
+                return _strokeE04;
             case "{0,5}":
-                return  _strokeE05;
+                return _strokeE05;
             case "{1,2}":
-                return  _strokeE12;
+                return _strokeE12;
             case "{1,3}":
-                return  _strokeE13;
+                return _strokeE13;
             case "{1,4}":
-                return  _strokeE14;
+                return _strokeE14;
             case "{1,5}":
-                return  _strokeE25;
+                return _strokeE25;
             case "{2,3}":
-                return  _strokeE23;
+                return _strokeE23;
             case "{2,4}":
-                return  _strokeE24;
+                return _strokeE24;
             case "{2,5}":
-                return  _strokeE25;
+                return _strokeE25;
             case "{3,4}":
-                return  _strokeE34;
+                return _strokeE34;
             case "{3,5}":
-                return  _strokeE35;
+                return _strokeE35;
             case "{4,5}":
-                return  _strokeE45;
+                return _strokeE45;
         }
         return null;
     }
 
-    private void  _setEdgeColor(string edge, IBrush color)
+    private void _setEdgeColor(string edge, IBrush color)
     {
         switch (edge)
         {
@@ -248,47 +247,5 @@ public partial class GameRoomViewModel : ViewModelBase
                 strokeE45 = color;
                 return;
         }
-        throw new System.NullReferenceException();
     }
-
-    private string? _strokeToString(IBrush brush)
-    {
-        if (strokeE01 == brush)
-            return "{0,1}";
-        if (strokeE02 == brush)
-            return "{0,2}";
-        if (strokeE03 == brush)
-            return "{0,3}";
-        if (strokeE04 == brush)
-            return "{0,4}";
-        if (strokeE05 == brush)
-            return "{0,5}";
-
-        if (strokeE12 == brush)
-            return "{1,2}";
-        if (strokeE13 == brush)
-            return "{1,3}";
-        if (strokeE14 == brush)
-            return "{1,4}";
-        if (strokeE15 == brush)
-            return "{1,5}";
-
-        if (strokeE23 == brush)
-            return "{2,3}";
-        if (strokeE24 == brush)
-            return "{2,4}";
-        if (strokeE25 == brush)
-            return "{2,5}";
-
-        if (strokeE34 == brush)
-            return "{3,4}";
-        if (strokeE35 == brush)
-            return "{3,5}";
-
-        if (strokeE45 == brush)
-            return "{4,5}";
-
-        return null;
-    }
-
 }
