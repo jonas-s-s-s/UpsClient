@@ -7,30 +7,60 @@
              x:Class="UpsClient.Views.GameRoomView"
 			 x:DataType="vm:GameRoomViewModel">
 
-	<Grid ColumnDefinitions="1*" RowDefinitions="1* 7*">
+	<Grid ColumnDefinitions="1*" RowDefinitions="1* 1* 7* 1*">
 		<TextBlock FontSize="17" FontWeight="Bold" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">Game Room</TextBlock>
 
-		<Grid Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+		<Grid ColumnDefinitions="1* 1* 1*" Grid.Row="1">
+			<Label VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" Content="{Binding OpponentUsername}" Foreground="Red" Grid.Column="0"/>
+			<Label VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" Content="{Binding GameStatus}" Grid.Column="1"/>
+			<Label VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" Content="{Binding MyUsername}" Foreground="Blue" Grid.Column="2"/>
+		</Grid>
+		
+		<Grid Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center">
 			<Canvas Width="800" Height="400">
-				<!--TOP NODE-->
-				<Ellipse Fill="Red" Width="15" Height="15" Canvas.Left="395" Canvas.Top="0"/>
-				<!--TOP LEFT NODE-->
-				<Ellipse Fill="Red" Width="15" Height="15" Canvas.Left="220" Canvas.Top="95.5"/>
-				<!--TOP RIGHT NODE-->
-				<Ellipse Fill="Red" Width="15" Height="15" Canvas.Left="565" Canvas.Top="95.5"/>
+				<!--============== EDGES START ==============-->
+				<Line Tag="\{0\,1\}" Stroke="{Binding strokeE01}" PointerPressed="Line_OnPointerPressed" StartPoint="405,5" EndPoint="230,100.5" StrokeThickness="5"/>
+				<Line Tag="\{0\,2\}" Stroke="{Binding strokeE02}" PointerPressed="Line_OnPointerPressed" StartPoint="405,5" EndPoint="225,278.5" StrokeThickness="5"/>
+				<Line Tag="\{0\,3\}" Stroke="{Binding strokeE03}" PointerPressed="Line_OnPointerPressed" StartPoint="405,5" EndPoint="403,385.5" StrokeThickness="5"/>
+				<Line Tag="\{0\,4\}" Stroke="{Binding strokeE04}" PointerPressed="Line_OnPointerPressed" StartPoint="405,5" EndPoint="570,270.5" StrokeThickness="5"/>
+				<Line Tag="\{0\,5\}" Stroke="{Binding strokeE05}" PointerPressed="Line_OnPointerPressed" StartPoint="405,5" EndPoint="570,101" StrokeThickness="5"/>
 
+				<Line Tag="\{1\,2\}" Stroke="{Binding strokeE12}" PointerPressed="Line_OnPointerPressed" StartPoint="227.5,100.5" EndPoint="227.5,278.5" StrokeThickness="5"/>
+				<Line Tag="\{1\,3\}" Stroke="{Binding strokeE13}" PointerPressed="Line_OnPointerPressed" StartPoint="230,100.5" EndPoint="403,385.5" StrokeThickness="5"/>
+				<Line Tag="\{1\,4\}" Stroke="{Binding strokeE14}" PointerPressed="Line_OnPointerPressed"  StartPoint="230,100.5" EndPoint="570,270.5" StrokeThickness="5"/>
+				<Line Tag="\{1\,5\}" Stroke="{Binding strokeE15}" PointerPressed="Line_OnPointerPressed" StartPoint="230,100.5" EndPoint="570,101" StrokeThickness="5"/>
 
+				<Line Tag="\{2\,3\}" Stroke="{Binding strokeE23}" PointerPressed="Line_OnPointerPressed" StartPoint="227.5,278.5" EndPoint="403,385.5" StrokeThickness="5"/>
+				<Line Tag="\{2\,4\}" Stroke="{Binding strokeE24}" PointerPressed="Line_OnPointerPressed" StartPoint="227.5,278.5" EndPoint="570,270.5" StrokeThickness="5"/>
+				<Line Tag="\{2\,5\}" Stroke="{Binding strokeE25}" PointerPressed="Line_OnPointerPressed" StartPoint="227.5,278.5" EndPoint="570,101" StrokeThickness="5"/>
 
+				<Line Tag="\{3\,4\}" Stroke="{Binding strokeE34}" PointerPressed="Line_OnPointerPressed" StartPoint="403,385.5" EndPoint="570,271" StrokeThickness="5"/>
+				<Line Tag="\{3\,5\}" Stroke="{Binding strokeE35}" PointerPressed="Line_OnPointerPressed" StartPoint="403,385.5" EndPoint="570,100" StrokeThickness="5"/>
 
+				<Line Tag="\{4\,5\}" Stroke="{Binding strokeE45}" PointerPressed="Line_OnPointerPressed" StartPoint="570,271" EndPoint="570,100" StrokeThickness="5"/>
 
-				<!--BOTTOM RIGHT NODE-->
-				<Ellipse Fill="Red" Width="15" Height="15" Canvas.Left="565" Canvas.Top="268.5"/>
-				<!--BOTTOM LEFT NODE-->
-				<Ellipse Fill="Red" Width="15" Height="15" Canvas.Left="220" Canvas.Top="268.5"/>
-				<!--BOTTOM NODE-->
-				<Ellipse Fill="Red" Width="15" Height="15" Canvas.Left="395" Canvas.Top="381.5"/>
+				<!--============== EDGES END ==============-->
+				<!--TOP NODE {0}-->
+				<Ellipse Fill="DarkBlue" Width="15" Height="15" Canvas.Left="397.5" Canvas.Top="0"/>
+				<!--TOP LEFT NODE {1} -->
+				<Ellipse Fill="DarkBlue" Width="15" Height="15" Canvas.Left="220" Canvas.Top="95.5"/>
+				<!--TOP RIGHT NODE {5}-->
+				<Ellipse Fill="DarkBlue" Width="15" Height="15" Canvas.Left="565" Canvas.Top="95.5"/>
+
+				<!--BOTTOM RIGHT NODE {4}-->
+				<Ellipse Fill="DarkBlue" Width="15" Height="15" Canvas.Left="565" Canvas.Top="263.5"/>
+				<!--BOTTOM LEFT NODE {2}-->
+				<Ellipse Fill="DarkBlue" Width="15" Height="15" Canvas.Left="220" Canvas.Top="270"/>
+				<!--BOTTOM NODE {3}-->
+				<Ellipse Fill="DarkBlue" Width="15" Height="15" Canvas.Left="395" Canvas.Top="379"/>
 			</Canvas>
 		</Grid>
 
+		<Grid Grid.Row="3" ColumnDefinitions="1* 1* 1*">
+			<Button IsEnabled="{Binding IsMyTurn}" Command="{Binding SubmitBtnCmd}" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Width="100" Height="30" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+				Submit
+			</Button>
+		</Grid>
+		
 	</Grid>
 </UserControl>

@@ -27,7 +27,7 @@
 		</Border>
 
 		<Border Name="ViewContainer" BorderThickness="1" Margin="5 0 0 0" BorderBrush="Black" Grid.Column="1" Grid.Row="1">
-			<ContentControl Content="{Binding currentView}"/>
+				<ContentControl Content="{Binding currentView}"/>
 		</Border>
 
 	</Grid>
