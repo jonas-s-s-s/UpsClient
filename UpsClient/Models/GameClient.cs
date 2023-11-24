@@ -25,6 +25,11 @@ namespace UpsClient.Models
             _clientConnection = new ClientConnection();
         }
 
+        public void startListenLoop()
+        {
+            //TODO
+        }
+
         public async Task connect(string host, string port)
         {
             Console.WriteLine("connect() called with: host: " + host + " port: " + port);
@@ -92,38 +97,38 @@ namespace UpsClient.Models
 
         }
 
-        public string getMyUsername()
-        {
-            return _myUsername;
-        }
-
-        public string getOpponentUsername()
-        {
-            return _opponentUsername;
-        }
-
-        public string getGameStatus()
-        {
-            return _gameStatus;
-        }
-
-        public bool isMyTurn()
-        {
-            return _isMyTurn;
-        }
-
-        public void joinGame(int id)
+        public async Task joinGame(int id)
         {
             Console.WriteLine("joinGame() called with " + id);
 
             _mainVm.changeToGameRoomView();
         }
 
-        public void claimEdge(string edge)
+        public async Task claimEdge(string edge)
         {
             Console.WriteLine("claimEdge() called with " + edge);
 
             //TODO
         }
+        
+        /*public string getMyUsername()
+{
+    return _myUsername;
+}
+
+public string getOpponentUsername()
+{
+    return _opponentUsername;
+}
+
+public string getGameStatus()
+{
+    return _gameStatus;
+}
+
+public bool isMyTurn()
+{
+    return _isMyTurn;
+}*/
     }
 }

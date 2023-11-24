@@ -27,7 +27,7 @@ public class ClientConnection
         _parser = new ProtocolParser();
     }
 
-    public async void connect(string hostname, string port)
+    public async Task connect(string hostname, string port)
     {
         int portInt = 0;
 
@@ -63,9 +63,7 @@ public class ClientConnection
         return protocolData;
     }
 
-    public async 
-    Task
-sendMsg(ProtocolData msg)
+    public async Task sendMsg(ProtocolData msg)
     {
         if (_stream == null)
             throw new Exception("sendMsg() stream can't be null!");
@@ -83,7 +81,7 @@ sendMsg(ProtocolData msg)
         Console.WriteLine($"Sent message: {msg}");
     }
 
-    public static IPEndPoint _createEndpoint(string hostNameOrAddress, int port)
+    private static IPEndPoint _createEndpoint(string hostNameOrAddress, int port)
     {
         IPAddress addr;
         bool gotAddr = IPAddress.TryParse(hostNameOrAddress, out addr);
