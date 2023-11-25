@@ -56,30 +56,32 @@ public class ProtocolParser
     {
         foreach (string line in lines)
         {
+            string lineTemp = line;
+
             // Error checking
-            if (savedLine.Length + line.Length > MaxLineLength)
+            if (savedLine.Length + lineTemp.Length > MaxLineLength)
             {
                 throw new InvalidOperationException("ProtocolParser::parse: Error - max line length has been exceeded!");
             }
 
-            if (isSavedLineFirst && line.Length + savedLine.Length > MaxMethodNameLength)
+            if (isSavedLineFirst && lineTemp.Length + savedLine.Length > MaxMethodNameLength)
             {
                 throw new InvalidOperationException("ProtocolParser::parse: Error - invalid msg format - method name cannot be longer than 32 chars.");
             }
 
             // If we didn't receive the full line, save it for later
-            if (!line.EndsWith(EndOfLine))
+            if (!lineTemp.EndsWith(EndOfLine))
             {
-                savedLine += line;
+                savedLine += lineTemp;
                 continue;
             }
             // \n can now be removed
-            savedLine = line.Remove(line.Length - 1);
+            lineTemp = lineTemp.Remove(lineTemp.Length - 1);
 
             // We have a full line, add any saved value to it
             if (!string.IsNullOrEmpty(savedLine))
             {
-                savedLine = savedLine.Insert(0, savedLine);
+                lineTemp = savedLine.Insert(0, savedLine);
                 // Clear the line cache
                 savedLine = string.Empty;
             }
@@ -87,7 +89,7 @@ public class ProtocolParser
             if (isSavedLineFirst)
             {
                 // First line of the message is the method name
-                MethodName parsedName = parseMethodName(line);
+                MethodName parsedName = parseMethodName(lineTemp);
                 if (parsedName == MethodName.PARSING_FAILED)
                     throw new InvalidOperationException("ProtocolParser::parse: Error - This method name is not allowed.");
                 else
@@ -98,14 +100,20 @@ public class ProtocolParser
             else
             {
                 // All other lines are in the format <attr_name>:<attr_value>\n
-                List<string> lineFields = split(savedLine, LineDelimiter);
-                if (lineFields.Count < 2)
+                List<string> lineFields = split(lineTemp, LineDelimiter);
+                if (lineFields.Count < 1)
                 {
                     throw new InvalidOperationException("ProtocolParser::parse: Error - Invalid line, missing line delimiter.");
                 }
+
+                string attrValue = "";
+                if (lineFields.Count > 1)
+                {
+                  attrValue = lineFields[1];
+                }
                 // Save the results
                 string attrName = lineFields[0];
-                string attrValue = lineFields[1];
+                attrName = attrName.Remove(attrName.Length - 1);
                 savedData[attrName] = attrValue;
             }
         }
@@ -116,30 +124,33 @@ public class ProtocolParser
         savedLine = string.Empty;
         isSavedLineFirst = true;
         savedMethod = MethodName.UNINITIALIZED;
-        savedData.Clear();
+        savedData = new Dictionary<string, string>();
     }
 
-    private List<string> split(string s, string delimiter)
+    private static List<string> split(string s, string delimiter)
     {
-        int posStart = 0;
-        int posEnd;
-        int delimLen = delimiter.Length;
-        string token;
-        List<string> res = new List<string>();
+        List<string> resultList = new List<string>();
 
-        while ((posEnd = s.IndexOf(delimiter, posStart)) != -1)
+        int startIndex = 0;
+        while (startIndex < s.Length)
         {
-            token = s.Substring(posStart, (posEnd - posStart) + delimLen);
-            posStart = posEnd + delimLen;
-            res.Add(token);
+            int delimiterIndex = s.IndexOf(delimiter, startIndex);
+            if (delimiterIndex == -1)
+            {
+                resultList.Add(s.Substring(startIndex));
+                break;
+            }
+            string substring = s.Substring(startIndex, delimiterIndex - startIndex + delimiter.Length);
+            resultList.Add(substring);
+            startIndex = delimiterIndex + delimiter.Length;
         }
 
-        // Do NOT add an empty string to the end of the vector
-        string end = s.Substring(posStart);
-        if (!string.IsNullOrEmpty(end))
-            res.Add(end);
+        while (resultList.Count > 0 && resultList[resultList.Count - 1] == delimiter)
+        {
+            resultList.RemoveAt(resultList.Count - 1);
+        }
 
-        return res;
+        return resultList;
     }
 
     private MethodName parseMethodName(string name)

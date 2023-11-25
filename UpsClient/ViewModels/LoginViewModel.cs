@@ -2,6 +2,7 @@
 using Avalonia.Interactivity;
 using ReactiveUI;
 using System.Reactive;
+using System.Threading.Tasks;
 using UpsClient.Models;
 using UpsClient.Views;
 
@@ -16,14 +17,14 @@ public partial class LoginViewModel : ViewModelBase
     public LoginViewModel(GameClient model)
     {
         _model = model;
-        OkBtnCmd = ReactiveCommand.Create(OkBtn_Click);
+        OkBtnCmd = ReactiveCommand.CreateFromTask(OkBtn_Click);
         usernameStr = string.Empty;
     }
 
-    public void OkBtn_Click()
+    public async Task OkBtn_Click()
     {
         if (!string.IsNullOrWhiteSpace(usernameStr))
-            _model.setUsername(usernameStr);
+            await _model.setUsername(usernameStr);
     }
 
 

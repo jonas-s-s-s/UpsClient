@@ -91,7 +91,8 @@ public static class ProtocolSerializer
         var output = new StringBuilder();
 
         // First add method name
-        output.AppendLine(serializeMethodName(data.Method));
+        output.Append(serializeMethodName(data.Method));
+        output.Append(EndOfLine);
 
         // Then add all attributes
         foreach (var (attrName, attrValue) in data.Data)
@@ -99,7 +100,7 @@ public static class ProtocolSerializer
             output.Append(attrName);
             output.Append(LineDelimiter);
             output.Append(attrValue);
-            output.AppendLine(EndOfLine);
+            output.Append(EndOfLine);
         }
 
         // Add message end sequence

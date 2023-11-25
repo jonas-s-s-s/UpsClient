@@ -1,8 +1,13 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using MsBox.Avalonia.Base;
 using ReactiveUI;
+using System;
+using System.Collections.Generic;
 using System.Reactive;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using UpsClient.Models;
 using UpsClient.Views;
 
@@ -17,14 +22,16 @@ public partial class GameRoomViewModel : ViewModelBase
 
     private GameClient _model;
 
-    bool _isMyTurn;
-
     public ReactiveCommand<Unit, Unit> SubmitBtnCmd { get; }
-    public bool IsMyTurn { get => _isMyTurn; set => this.RaiseAndSetIfChanged(ref _isMyTurn, value); }
 
-    public string OpponentUsername { get; set; }
-    public string GameStatus { get; set; }
-    public string MyUsername { get; set; }
+    private bool _isMyTurn;
+    public bool IsMyTurn { get => _isMyTurn; set => this.RaiseAndSetIfChanged(ref _isMyTurn, value); }
+    private string _opponentUsername;
+    public string OpponentUsername { get => _opponentUsername; set => this.RaiseAndSetIfChanged(ref _opponentUsername, value); }
+    private string _gameStatus;
+    public string GameStatus { get => _gameStatus; set => this.RaiseAndSetIfChanged(ref _gameStatus, value); }
+    private string _myUsername;
+    public string MyUsername { get => _myUsername; set => this.RaiseAndSetIfChanged(ref _myUsername, value); }
 
     IBrush _strokeE01 = DEFAULT_BRUSH;
     public IBrush strokeE01 { get => _strokeE01; set => this.RaiseAndSetIfChanged(ref _strokeE01, value); }
@@ -76,29 +83,31 @@ public partial class GameRoomViewModel : ViewModelBase
     public GameRoomViewModel(GameClient model)
     {
         _model = model;
-        SubmitBtnCmd = ReactiveCommand.Create(SubmitBtn_Click);
+        //Register callbacks
+        model.setOpponentUsernameCallback((username) => { OpponentUsername = username; });
+        model.setMyUsernameCallback((username) => { MyUsername = username; });
+        model.setGameStatusCallback((status) => { GameStatus = status; });
+        model.setIsMyTurnCallback((turn) => { IsMyTurn = turn; });
+        model.setGraphUpdateCallback((myEdges, opponentEdges) => { _reloadGraph(myEdges, opponentEdges); });
 
-        //Get from model
-        OpponentUsername = _model.getOpponentUsername();
-        MyUsername = _model.getMyUsername();
-        IsMyTurn = _model.isMyTurn();
+        SubmitBtnCmd = ReactiveCommand.CreateFromTask(SubmitBtn_Click);
 
-        GameStatus = "Waiting...";
+        _opponentUsername = "---";
+        _myUsername = "---";
+        _isMyTurn = false;
+        _gameStatus = "Waiting...";
+
         _resetAllStrokes();
     }
 
-    public void SubmitBtn_Click()
+    public async Task SubmitBtn_Click()
     {
         if (lastClickedEdge == null)
             return;
 
-        _model.claimEdge(lastClickedEdge);
-        //IsOurTurn = false;
-
-        //TODO: Await response?
+        await _model.claimEdge(lastClickedEdge);
 
         _setEdgeColor(lastClickedEdge, MY_CLAIMED_LINE_BRUSH);
-        //Upadate GameStatus
         lastClickedEdge = null;
     }
 
@@ -134,6 +143,42 @@ public partial class GameRoomViewModel : ViewModelBase
             }
             lastClickedEdge = edge;
         }
+    }
+
+    private void _reloadGraph(string myEdges, string opponentEdges)
+    {
+        _resetAllStrokes();
+        List<string> myEs = _parseEdgeList(myEdges);
+        List<string> opponentEs = _parseEdgeList(opponentEdges);
+
+        foreach (string e in myEs)
+        {
+            _setEdgeColor(e, MY_CLAIMED_LINE_BRUSH);
+        }
+
+        foreach (string e in opponentEs)
+        {
+            _setEdgeColor(e, OPPONENT_LINE_BRUSH);
+        }
+
+    }
+
+    private static List<string> _parseEdgeList(string input)
+    {
+        List<string> resultList = new List<string>();
+        string pattern = @"\{(\d+),(\d+)\}";
+        MatchCollection matches = Regex.Matches(input, pattern);
+        foreach (Match match in matches)
+        {
+            if (match.Success)
+            {
+                string number1 = match.Groups[1].Value;
+                string number2 = match.Groups[2].Value;
+                string resultItem = $"{{{number1},{number2}}}";
+                resultList.Add(resultItem);
+            }
+        }
+        return resultList;
     }
 
     private void _resetAllStrokes()

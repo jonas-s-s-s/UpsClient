@@ -14,7 +14,8 @@ namespace UpsClient.Utils;
 
 public class ClientConnection
 {
-    private static readonly SemaphoreLocker _locker = new SemaphoreLocker();
+    private static readonly SemaphoreLocker _sendLock = new SemaphoreLocker();
+    private static readonly object _readLock = new object();
 
     private TcpClient _client;
     private NetworkStream? _stream;
@@ -42,7 +43,7 @@ public class ClientConnection
         _stream = _client.GetStream();
     }
 
-    public async Task<List<ProtocolData>?> readMsg()
+    public List<ProtocolData>? readMsg()
     {
         if (_stream == null)
             throw new Exception("readMsg() stream can't be null!");
@@ -53,12 +54,13 @@ public class ClientConnection
 
         List<ProtocolData>? protocolData = null;
 
-        await _locker.LockAsync(async () =>
+        lock(_readLock)
         {
-            int bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length);
+            int bytesRead = _stream.Read(buffer, 0, buffer.Length);
             string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-            protocolData = _parser.parse(receivedMessage);
-        });
+            if(receivedMessage != null)
+                protocolData = _parser.parse(receivedMessage);
+        }
 
         return protocolData;
     }
@@ -73,7 +75,7 @@ public class ClientConnection
 
         byte[] messageBytes = Encoding.UTF8.GetBytes(ProtocolSerializer.serializeProtocolData(msg));
 
-        await _locker.LockAsync(async () =>
+        await _sendLock.LockAsync(async () =>
         {
             await _stream.WriteAsync(messageBytes, 0, messageBytes.Length);
         });
@@ -92,6 +94,18 @@ public class ClientConnection
         }
         IPEndPoint instance = new IPEndPoint(addr, port);
         return instance;
+    }
+
+    public bool isAlive()
+    {
+        try
+        {
+            return _client.Connected;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     ~ClientConnection()

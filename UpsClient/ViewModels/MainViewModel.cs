@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using ReactiveUI;
 using System.Reactive;
 using UpsClient.Models;
@@ -71,6 +72,11 @@ public partial class MainViewModel : ViewModelBase
         isDisconnectBtnEnabled = true;
         isLeaveGameBtnEnabled = false;
 
+        Dispatcher.UIThread.Invoke(() =>
+        {
+            IdleRoomViewModel vm = (IdleRoomViewModel)IdleRoomView.DataContext;
+            vm.refresh();
+        });
         currentView = IdleRoomView;
     }
 

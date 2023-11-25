@@ -3,6 +3,7 @@ using Avalonia.Interactivity;
 using Config.Net;
 using ReactiveUI;
 using System.Reactive;
+using System.Threading.Tasks;
 using UpsClient.Models;
 using UpsClient.Utils;
 using UpsClient.Views;
@@ -21,7 +22,7 @@ public partial class ServerIpViewModel : ViewModelBase
     public ServerIpViewModel(GameClient model)
     {
         _model = model;
-        OkBtnCmd = ReactiveCommand.Create(OkBtn_Click);
+        OkBtnCmd = ReactiveCommand.CreateFromTask(OkBtn_Click);
         hostnameStr = "";
         portStr = "";
 
@@ -34,14 +35,14 @@ public partial class ServerIpViewModel : ViewModelBase
             portStr = _settings.serverPort;
     }
 
-    public void OkBtn_Click()
+    public async Task OkBtn_Click()
     {
         if (!string.IsNullOrWhiteSpace(hostnameStr) && !string.IsNullOrWhiteSpace(portStr))
         {
             _settings.serverHostname = hostnameStr;
             _settings.serverPort = portStr;
 
-            _model.connect(hostnameStr, portStr);
+            await _model.connect(hostnameStr, portStr);
         }
     }
 

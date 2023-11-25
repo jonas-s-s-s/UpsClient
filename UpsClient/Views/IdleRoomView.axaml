@@ -11,31 +11,31 @@
 		<TextBlock FontSize="17" FontWeight="Bold" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">Choose a game room:</TextBlock>
 
 		<Border Margin="15 5 15 5" Grid.Column="0" Grid.Row="1" Background="AntiqueWhite" BorderBrush="Black" BorderThickness="1">
-			<Grid ColumnDefinitions="1* 2* 2* 2* 2*">
+			<Grid ColumnDefinitions="3* 5* 5* 5* 2*">
 				<Label FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" Content="Room #"></Label>
 				<Label FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" Content="Game state"></Label>
 				<Label FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="2" Content="Player1 username"></Label>
 				<Label FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="3" Content="Player2 username"></Label>
-				<Label FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="4" Content="Room capacity"></Label>
+				<Button Command="{Binding RefreshBtnCmd}" FontWeight="Normal" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="4" Content="Refresh"></Button>
 			</Grid>
 		</Border>
 
-		<ItemsControl Grid.Column="0" Grid.Row="2" ItemsSource="{Binding ListItems}">
-			<ItemsControl.ItemTemplate>
-				<DataTemplate>
-					<Border Tag="{Binding roomId}" PointerPressed="Item_PointerPressed" Margin="15 2 15 2" Background="Azure" BorderBrush="Black" BorderThickness="1">
-						<Grid Height="25" ColumnDefinitions="1* 2* 2* 2* 2*">
-							<Label Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{Binding roomId}"></Label>
-							<Label Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{Binding state}"></Label>
-							<Label Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{Binding player1}"></Label>
-							<Label Grid.Column="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{Binding player2}"></Label>
-							<Label Grid.Column="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{Binding capacity}"></Label>
-						</Grid>
-					</Border>
-				</DataTemplate>
-			</ItemsControl.ItemTemplate>
-		</ItemsControl>
-
+		<ScrollViewer Grid.Column="0" Grid.Row="2">
+			<ItemsControl ItemsSource="{Binding ListItems}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<Border Tag="{Binding roomId}" PointerPressed="Item_PointerPressed" Margin="15 2 15 2" Background="Azure" BorderBrush="Black" BorderThickness="1">
+							<Grid Height="25" ColumnDefinitions="3* 5* 5* 5* 2*">
+								<Label Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{Binding roomId}"></Label>
+								<Label Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{Binding state}"></Label>
+								<Label Grid.Column="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{Binding player1}"></Label>
+								<Label Grid.Column="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Content="{Binding player2}"></Label>
+							</Grid>
+						</Border>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</ScrollViewer>
 
 	</Grid>
 </UserControl>
