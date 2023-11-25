@@ -20,6 +20,8 @@ public class ClientConnection
     private TcpClient _client;
     private NetworkStream? _stream;
     private ProtocolParser _parser;
+    public string port;
+    public string hostname;
 
     public ClientConnection()
     {
@@ -30,6 +32,9 @@ public class ClientConnection
 
     public async Task connect(string hostname, string port)
     {
+        this.port = port;
+        this.hostname = hostname;
+
         int portInt = 0;
 
         if (!Int32.TryParse(port, out portInt))
@@ -46,9 +51,9 @@ public class ClientConnection
     public List<ProtocolData>? readMsg()
     {
         if (_stream == null)
-            throw new Exception("readMsg() stream can't be null!");
+            throw new IOException("readMsg() stream can't be null!");
         if (!_client.Connected)
-            throw new Exception("readMsg() Client has to be connected!");
+            throw new IOException("readMsg() Client has to be connected!");
 
         byte[] buffer = new byte[4096];
 
@@ -68,10 +73,10 @@ public class ClientConnection
     public async Task sendMsg(ProtocolData msg)
     {
         if (_stream == null)
-            throw new Exception("sendMsg() stream can't be null!");
+            throw new IOException("sendMsg() stream can't be null!");
 
         if (!_client.Connected)
-            throw new Exception("sendMsg() Client has to be connected!");
+            throw new IOException("sendMsg() Client has to be connected!");
 
         byte[] messageBytes = Encoding.UTF8.GetBytes(ProtocolSerializer.serializeProtocolData(msg));
 

@@ -11,7 +11,6 @@ namespace UpsClient.ViewModels;
 public partial class MainViewModel : ViewModelBase
 {
     private GameClient _model;
-
     private UserControl _currentView;
     public UserControl currentView { get => _currentView; set => this.RaiseAndSetIfChanged(ref this._currentView, value); }
 
@@ -20,6 +19,7 @@ public partial class MainViewModel : ViewModelBase
     public IdleRoomView IdleRoomView;
     public LoginView LoginView;
     public ServerIpView ServerIpView;
+    public ConnectionLostView ConnectionLostView;
 
     public ReactiveCommand<Unit, Unit> DisconnectBtnCmd { get; }
     public ReactiveCommand<Unit, Unit> LeaveGameBtnCmd { get; }
@@ -28,6 +28,8 @@ public partial class MainViewModel : ViewModelBase
     public bool isDisconnectBtnEnabled { get => _isDisconnectBtnEnabled; set => this.RaiseAndSetIfChanged(ref _isDisconnectBtnEnabled, value); }
     private bool _isLeaveGameBtnEnabled = false;
     public bool isLeaveGameBtnEnabled { get => _isLeaveGameBtnEnabled; set => this.RaiseAndSetIfChanged(ref _isLeaveGameBtnEnabled, value); }
+
+    private UserControl? _connectionLostPreviousView = null;
 
     public MainViewModel()
     {
@@ -38,7 +40,7 @@ public partial class MainViewModel : ViewModelBase
 
         GameRoomView = new GameRoomView();
         GameRoomView.DataContext = new GameRoomViewModel(_model);
-        
+
         IdleRoomView = new IdleRoomView();
         IdleRoomView.DataContext = new IdleRoomViewModel(_model);
 
@@ -47,6 +49,9 @@ public partial class MainViewModel : ViewModelBase
 
         ServerIpView = new ServerIpView();
         ServerIpView.DataContext = new ServerIpViewModel(_model);
+
+        ConnectionLostView = new ConnectionLostView();
+        ConnectionLostView.DataContext = new ConnectionLostViewModel(_model);
 
         _currentView = ServerIpView;
     }
@@ -88,16 +93,28 @@ public partial class MainViewModel : ViewModelBase
         currentView = GameRoomView;
     }
 
-    //Event handlers
-    //##############################################################################
-    public void DisconnectBtn_Click()
+    public void turnOnConnectionlostView()
     {
-        _model.disconnect();
+        _connectionLostPreviousView = currentView;
+        currentView = ConnectionLostView;
     }
 
-    public void LeaveGameBtn_Click()
+    public void turnOffConnectionlostView()
     {
-        _model.leaveGame();
+        if (_connectionLostPreviousView != null)
+            currentView = _connectionLostPreviousView;
+    }
+
+    //Event handlers
+    //##############################################################################
+    public async void DisconnectBtn_Click()
+    {
+        await _model.disconnect();
+    }
+
+    public async void LeaveGameBtn_Click()
+    {
+        await _model.leaveGame();
     }
 
 

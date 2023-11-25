@@ -3,21 +3,19 @@ using MsBox.Avalonia;
 using System;
 using UpsClient.Utils;
 using UpsClient.ViewModels;
-using UpsClient.Views;
 using System.Threading.Tasks;
 using static UpsClient.Utils.ProtocolSerializer;
 using System.Collections.Generic;
 using System.Threading;
 using System.Collections.Concurrent;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Avalonia.Threading;
-using MsBox.Avalonia.ViewModels;
+using System.IO;
 
 namespace UpsClient.Models;
 
 public class GameClient
 {
-    private static readonly int PING_INTERVAL = 5000;
+    private const int CUMMULATIVE_RECCONECT_WAIT = 13500; //3500
+    private static readonly int PING_INTERVAL = 29000;
 
     private MainViewModel _mainVm;
     private ClientConnection _clientConnection;
@@ -27,9 +25,6 @@ public class GameClient
     private PeriodicTimer? _pingTimer = null;
 
     ConcurrentDictionary<string, string> _clientData = new ConcurrentDictionary<string, string>();
-    /*private string _opponentUsername = "Opponent";
-    private string _gameStatus = "Waiting...";
-    private bool _isMyTurn = false;*/
 
     private Action<List<RoomListItem>>? _addRoomListItemCallback = null;
     private Action<string>? _opponentUsernameCallback = null;
@@ -37,7 +32,7 @@ public class GameClient
     private Action<string>? _gameStatusCallback = null;
     private Action<bool>? _isMyTurnCallback = null;
     private Action<string, string>? _graphUpdateCallback = null;
-
+    private Action<string> _connectionLostCallback = null;
 
     public GameClient(MainViewModel mainVm)
     {
@@ -83,17 +78,70 @@ public class GameClient
                     }
                 }
             }
-            catch (Exception ex) { }
+            catch (IOException ex)
             {
-
-
-                _ = Dispatcher.UIThread.Invoke(async () =>
+                //Server connection errored
+                if(!await _attemptToReconnect(ex))
                 {
-                    var box = MessageBoxManager.GetMessageBoxStandard("Error", "Server connection was lost, attempting to reconnect.", ButtonEnum.Ok, Icon.Warning);
-                    await box.ShowAsync();
-                });
+                    return;
+                }
             }
         }
+
+        if(_isListening && !_clientConnection.isAlive() )
+        {
+            //Server connection closed
+            if (!await _attemptToReconnect(new IOException("Connection closed.")))
+            {
+                return;
+            }
+        }
+    }
+
+    private async Task<bool> _attemptToReconnect(IOException ex)
+    {
+        _killGamePinger();
+        _clientData["isInIdleRoom"] = "yes";
+        _isMyTurnCallback?.Invoke(false);
+
+        string host = _clientConnection.hostname;
+        string port = _clientConnection.port;
+
+        _mainVm.turnOnConnectionlostView();
+        int tries = 3;
+        for (int i = 1; i < tries + 1; i++)
+        {
+            _connectionLostCallback?.Invoke("Error message: " + ex.Message + "\nAttempting to reconnect (" + i + "/" + tries + ")");
+            if (i != 1)
+                System.Threading.Thread.Sleep(CUMMULATIVE_RECCONECT_WAIT * i);
+            try
+            {
+                _clientConnection = new ClientConnection();
+                await _clientConnection.connect(host, port);
+            }
+            catch (Exception)
+            {
+                _clientConnection = null;
+            }
+
+            if (_clientConnection != null)
+            {
+                _mainVm.turnOffConnectionlostView();
+                if (_clientData.ContainsKey("myUsername"))
+                    await setUsername(_clientData["myUsername"]);
+                return true;
+            }
+        }
+
+        _connectionLostCallback?.Invoke("Failed to reconnect. Killing connection.");
+        Thread.Sleep(4000);
+
+        _clientData.Clear();
+        _clientConnection = new ClientConnection();
+        _mainVm.changeToServerIpView();
+        _isListening = false;
+
+        return false;
     }
 
     private async void _gamePingerLoop(PeriodicTimer periodicTimer)
@@ -120,8 +168,7 @@ public class GameClient
         {
             case MethodName.CONNECTED_OK:
                 Console.WriteLine("Connected ok.");
-                _pingTimer?.Dispose();
-                _pingTimer = null;
+                _killGamePinger();
 
                 //Return to idle room if opponent leaves game
                 if (_clientData.ContainsKey("myUsername"))
@@ -244,8 +291,7 @@ public class GameClient
         Console.WriteLine("leaveGame() called");
         _mainVm.changeToIdleRoomView();
 
-        _pingTimer?.Dispose();
-        _pingTimer = null;
+        _killGamePinger();
 
         try
         {
@@ -382,5 +428,10 @@ public class GameClient
     public void setGraphUpdateCallback(Action<string, string> callback)
     {
         _graphUpdateCallback = callback;
+    }
+
+    public void setConnectionLostCallback(Action<string> callback)
+    {
+        _connectionLostCallback = callback;
     }
 }
