@@ -95,7 +95,8 @@ public class ClientConnection
         if (!gotAddr)
         {
             IPHostEntry dnsInfo = Dns.GetHostEntry(hostNameOrAddress);
-            addr = dnsInfo.AddressList.First();
+            IPAddress[] ipv4Addresses = Array.FindAll(Dns.GetHostEntry(hostNameOrAddress).AddressList,a => a.AddressFamily == AddressFamily.InterNetwork);
+            addr = ipv4Addresses.First();
         }
         IPEndPoint instance = new IPEndPoint(addr, port);
         return instance;
