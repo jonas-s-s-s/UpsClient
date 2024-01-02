@@ -14,6 +14,8 @@ namespace UpsClient.Models;
 
 public class GameClient
 {
+    private bool _isWaitingToJoinIdleRoom = false;
+    
     private const int CUMMULATIVE_RECCONECT_WAIT = 13500; //3500
     private static readonly int PING_INTERVAL = 29000;
 
@@ -143,7 +145,7 @@ public class GameClient
 
         return false;
     }
-
+    
     private async void _gamePingerLoop(PeriodicTimer periodicTimer)
     {
         try
@@ -181,7 +183,17 @@ public class GameClient
                 break;
             case MethodName.REQ_ACCEPTED:
                 Console.WriteLine("Server request accepted.");
-
+                
+                //TODO: Switch to idle room
+                if (_isWaitingToJoinIdleRoom)
+                {
+                    _isWaitingToJoinIdleRoom = false;
+                    _mainVm.changeToIdleRoomView();
+                    await updateRoomList();
+                    
+                    return;
+                }
+                
                 //Check if msg contains room_list
                 if (msg.hasField("room_list") && _addRoomListItemCallback != null)
                 {
@@ -342,8 +354,12 @@ public class GameClient
             await _clientConnection.sendMsg(newProtocolMessage(MethodName.ENTER_USERNAME, ("username", username)));
             _clientData["myUsername"] = username;
             _clientData["isInIdleRoom"] = "yes";
-            _mainVm.changeToIdleRoomView();
-            await updateRoomList();
+            
+            //TODO: Check if REQ_OK received
+            _isWaitingToJoinIdleRoom = true;
+
+            //_mainVm.changeToIdleRoomView();
+            //await updateRoomList();
         }
         catch (Exception ex)
         {
